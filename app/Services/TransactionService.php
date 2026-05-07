@@ -28,7 +28,8 @@ class TransactionService
         int $categoryId,
         float $amount,
         ?string $note = null,
-        ?\DateTime $transactionDate = null
+        ?\DateTime $transactionDate = null,
+        ?string $transactionTime = null
     ): Transaction {
         // Validate category is income type
         $category = Category::where('id', $categoryId)
@@ -39,7 +40,7 @@ class TransactionService
             throw new InvalidArgumentException('Invalid income category');
         }
 
-        return DB::transaction(function () use ($userId, $walletId, $categoryId, $amount, $note, $transactionDate) {
+        return DB::transaction(function () use ($userId, $walletId, $categoryId, $amount, $note, $transactionDate, $transactionTime) {
             $wallet = Wallet::lockForUpdate()->find($walletId);
 
             if ($wallet->user_id !== $userId) {
@@ -58,6 +59,7 @@ class TransactionService
                 'balance_after' => $newBalance,
                 'note' => $note,
                 'transaction_date' => $date,
+                'transaction_time' => $transactionTime,
             ]);
 
             // Update wallet balance
@@ -77,7 +79,8 @@ class TransactionService
         int $categoryId,
         float $amount,
         ?string $note = null,
-        ?\DateTime $transactionDate = null
+        ?\DateTime $transactionDate = null,
+        ?string $transactionTime = null
     ): Transaction {
         // Validate category is expense type
         $category = Category::where('id', $categoryId)
@@ -88,7 +91,7 @@ class TransactionService
             throw new InvalidArgumentException('Invalid expense category');
         }
 
-        return DB::transaction(function () use ($userId, $walletId, $categoryId, $amount, $note, $transactionDate) {
+        return DB::transaction(function () use ($userId, $walletId, $categoryId, $amount, $note, $transactionDate, $transactionTime) {
             $wallet = Wallet::lockForUpdate()->find($walletId);
 
             if ($wallet->user_id !== $userId) {
@@ -111,6 +114,7 @@ class TransactionService
                 'balance_after' => $newBalance,
                 'note' => $note,
                 'transaction_date' => $date,
+                'transaction_time' => $transactionTime,
             ]);
 
             // Update wallet balance
@@ -130,13 +134,14 @@ class TransactionService
         int $toWalletId,
         float $amount,
         ?string $note = null,
-        ?\DateTime $transactionDate = null
+        ?\DateTime $transactionDate = null,
+        ?string $transactionTime = null
     ): Transaction {
         if ($fromWalletId === $toWalletId) {
             throw new InvalidArgumentException('Cannot transfer to the same wallet');
         }
 
-        return DB::transaction(function () use ($userId, $fromWalletId, $toWalletId, $amount, $note, $transactionDate) {
+        return DB::transaction(function () use ($userId, $fromWalletId, $toWalletId, $amount, $note, $transactionDate, $transactionTime) {
             // Lock both wallets to prevent race condition
             $fromWallet = Wallet::lockForUpdate()->find($fromWalletId);
             $toWallet = Wallet::lockForUpdate()->find($toWalletId);
@@ -171,6 +176,7 @@ class TransactionService
                 'balance_after' => $fromNewBalance,
                 'note' => $note,
                 'transaction_date' => $date,
+                'transaction_time' => $transactionTime,
             ]);
 
             return $transaction->load('wallet', 'toWallet');
@@ -188,9 +194,10 @@ class TransactionService
         int $walletId,
         float $newBalance,
         ?string $note = null,
-        ?\DateTime $transactionDate = null
+        ?\DateTime $transactionDate = null,
+        ?string $transactionTime = null
     ): ?Transaction {
-        return DB::transaction(function () use ($userId, $walletId, $newBalance, $note, $transactionDate) {
+        return DB::transaction(function () use ($userId, $walletId, $newBalance, $note, $transactionDate, $transactionTime) {
             $wallet = Wallet::lockForUpdate()->find($walletId);
 
             if ($wallet->user_id !== $userId) {
@@ -215,6 +222,7 @@ class TransactionService
                 'balance_after' => $newBalance,
                 'note' => $note ?? 'Difference',
                 'transaction_date' => $date,
+                'transaction_time' => $transactionTime,
             ]);
 
             // Update wallet balance

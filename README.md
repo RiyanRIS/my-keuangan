@@ -20,6 +20,8 @@ Project Laravel versi terbaru untuk aplikasi pencatatan keuangan sederhana. Clea
 
 ```bash
 composer install
+npm i
+npm run build
 ```
 
 ### 2. Configure Environment

@@ -19,6 +19,7 @@ class StoreIncomeRequest extends FormRequest
             'amount' => 'required|numeric|min:0.01',
             'note' => 'nullable|string|max:500',
             'transaction_date' => 'nullable|date',
+            'transaction_time' => 'nullable|date_format:H:i',
         ];
     }
 }

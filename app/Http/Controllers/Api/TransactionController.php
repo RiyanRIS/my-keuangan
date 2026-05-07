@@ -51,7 +51,8 @@ class TransactionController extends BaseController
                 categoryId: $request->category_id,
                 amount: $request->amount,
                 note: $request->note,
-                transactionDate: $request->transaction_date ? new \DateTime($request->transaction_date) : null
+                transactionDate: $request->transaction_date ? new \DateTime($request->transaction_date) : null,
+                transactionTime: $request->transaction_time
             );
 
             return ApiResponse::created(
@@ -77,7 +78,8 @@ class TransactionController extends BaseController
                 categoryId: $request->category_id,
                 amount: $request->amount,
                 note: $request->note,
-                transactionDate: $request->transaction_date ? new \DateTime($request->transaction_date) : null
+                transactionDate: $request->transaction_date ? new \DateTime($request->transaction_date) : null,
+                transactionTime: $request->transaction_time
             );
 
             return ApiResponse::created(
@@ -103,7 +105,8 @@ class TransactionController extends BaseController
                 toWalletId: $request->to_wallet_id,
                 amount: $request->amount,
                 note: $request->note,
-                transactionDate: $request->transaction_date ? new \DateTime($request->transaction_date) : null
+                transactionDate: $request->transaction_date ? new \DateTime($request->transaction_date) : null,
+                transactionTime: $request->transaction_time
             );
 
             return ApiResponse::created(
@@ -160,7 +163,9 @@ class TransactionController extends BaseController
                 userId: $userId,
                 walletId: $walletId,
                 newBalance: $request->balance,
-                note: $request->note
+                note: $request->note,
+                transactionDate: null,
+                transactionTime: null
             );
 
             if (!$transaction) {

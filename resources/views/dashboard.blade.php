@@ -86,7 +86,6 @@
     <!-- Floating Action Button (FAB) -->
     <button id="fabMain" class="fixed bottom-24 right-6 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white w-16 h-16 rounded-full shadow-2xl flex items-center justify-center transition transform hover:scale-110 z-40 flex-col justify-center items-center">
         <i class="fas fa-plus text-3xl"></i>
-        <span class="text-xs mt-1 font-semibold">Transaksi</span>
     </button>
 
     <!-- Bottom Navigation -->
