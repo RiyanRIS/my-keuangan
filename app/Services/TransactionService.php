@@ -36,7 +36,7 @@ class TransactionService
             ->where('user_id', $userId)
             ->first();
 
-        if (!$category || $category->type !== 'income') {
+        if (!$category || $category->type->value !== 'income') {
             throw new InvalidArgumentException('Invalid income category');
         }
 
@@ -87,7 +87,7 @@ class TransactionService
             ->where('user_id', $userId)
             ->first();
 
-        if (!$category || $category->type !== 'expense') {
+        if (!$category || $category->type->value !== 'expense') {
             throw new InvalidArgumentException('Invalid expense category');
         }
 
@@ -96,10 +96,6 @@ class TransactionService
 
             if ($wallet->user_id !== $userId) {
                 throw new InvalidArgumentException('Wallet does not belong to user');
-            }
-
-            if ($wallet->balance < $amount) {
-                throw new InvalidArgumentException('Insufficient balance');
             }
 
             $newBalance = $wallet->balance - $amount;

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\WalletController;
 use App\Http\Controllers\Api\WalletTypeController;
@@ -40,5 +41,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/wallet/{walletId}', [TransactionController::class, 'walletTransactions'])->name('transactions.wallet');
         Route::get('/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
         Route::post('/wallet/{walletId}/update-balance', [TransactionController::class, 'updateWalletBalance'])->name('transactions.updateBalance');
+    });
+
+    // Report routes
+    Route::prefix('report')->group(function () {
+        Route::get('/transactions', [ReportController::class, 'transactions'])->name('report.transactions');
+        Route::get('/category-breakdown', [ReportController::class, 'categoryBreakdown'])->name('report.categoryBreakdown');
     });
 });

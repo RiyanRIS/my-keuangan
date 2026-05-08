@@ -30,24 +30,20 @@
         </header>
 
         <!-- Main Content -->
-        <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-8 sm:px-6 lg:px-8">
+        <main class="flex-1 max-w-6xl w-full mx-auto px-4 py-4 sm:px-6 lg:px-8">
             <!-- Trans Section -->
-            <section id="trans-section" class="bg-white rounded-lg shadow p-6 mb-6">
-                <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center space-x-2">
-                    <i class="fas fa-exchange-alt text-blue-600"></i>
-                    <span>Transaksi</span>
-                </h2>
-                <p class="text-gray-600">Daftar transaksi Anda akan ditampilkan di sini.</p>
-            </section>
+            @include('dashboard.trans')
 
             <!-- Stats Section -->
-            <section id="stats-section" class="hidden bg-white rounded-lg shadow p-6 mb-6">
+            @include('dashboard.stats')
+
+            {{-- <section id="stats-section" class="hidden bg-white rounded-lg shadow p-6 mb-6">
                 <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center space-x-2">
                     <i class="fas fa-chart-line text-green-600"></i>
                     <span>Statistik</span>
                 </h2>
                 <p class="text-gray-600">Grafik dan statistik keuangan Anda akan ditampilkan di sini.</p>
-            </section>
+            </section> --}}
 
             <!-- Accounts Section -->
             <section id="accounts-section" class="hidden bg-white rounded-lg shadow p-6 mb-6">
@@ -280,6 +276,8 @@
 
         function closeTransactionModal() {
             $('#transactionModal').addClass('hidden');
+
+            loadReport('day');
 
             $('#categoryDisplay').text("Pilih kategori...");
             $('#walletDisplay').text("Pilih dompet...");

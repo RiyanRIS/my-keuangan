@@ -875,6 +875,270 @@
           }
         }
       ]
+    },
+    {
+      "name": "Report",
+      "item": [
+        {
+          "name": "Get Transactions Report - Grouped by Day",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/report/transactions?group=day",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "report",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "group",
+                  "value": "day"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Transactions Report - Grouped by Week",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/report/transactions?group=week",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "report",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "group",
+                  "value": "week"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Transactions Report - Grouped by Month",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/report/transactions?group=month",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "report",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "group",
+                  "value": "month"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Transactions Report - With Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/report/transactions?group=day&start_date=2026-05-01&end_date=2026-05-10",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "report",
+                "transactions"
+              ],
+              "query": [
+                {
+                  "key": "group",
+                  "value": "day"
+                },
+                {
+                  "key": "start_date",
+                  "value": "2026-05-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-05-10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Category Breakdown - Expenses by Month",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/report/category-breakdown?type=expense&period=month",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "report",
+                "category-breakdown"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "expense"
+                },
+                {
+                  "key": "period",
+                  "value": "month"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Category Breakdown - Income by Year",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/report/category-breakdown?type=income&period=year",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "report",
+                "category-breakdown"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "income"
+                },
+                {
+                  "key": "period",
+                  "value": "year"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Category Breakdown - With Date Range",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{api_token}}"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/report/category-breakdown?type=expense&period=month&start_date=2026-05-01&end_date=2026-05-31",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "report",
+                "category-breakdown"
+              ],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "expense"
+                },
+                {
+                  "key": "period",
+                  "value": "month"
+                },
+                {
+                  "key": "start_date",
+                  "value": "2026-05-01"
+                },
+                {
+                  "key": "end_date",
+                  "value": "2026-05-31"
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ],
   "variable": [

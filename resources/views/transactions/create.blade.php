@@ -559,11 +559,19 @@
                     $('#submitBtn').prop('disabled', false).css('opacity', '1');
 
                     if (error.status === 422) {
-                        const errors = error.responseJSON.meta || {};
-                        $.each(errors, function(field, messages) {
-                            const errorClass = '.' + field + '-error';
-                            $(errorClass).text(messages[0]).removeClass('hidden');
-                        });
+                        const errors = error.responseJSON.errors || {};
+                        if(errors.length > 0) {
+                            $.each(errors, function(field, messages) {
+                                const errorClass = '.' + field + '-error';
+                                $(errorClass).text(messages[0]).removeClass('hidden');
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: error.responseJSON?.message || 'Terjadi kesalahan'
+                            });
+                        }
                     } else {
                         Swal.fire({
                             icon: 'error',
