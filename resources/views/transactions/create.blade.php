@@ -228,30 +228,68 @@
 
 <!-- Floating Category Grid -->
 <div
-    class="category-grid-floating hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50 max-h-80 overflow-y-auto">
+    class="category-grid-floating hidden fixed bottom-15 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50 max-h-80 overflow-y-auto">
     <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold text-gray-700">Pilih Kategori</h3>
-        <button class="text-gray-500 hover:text-gray-700" id="closeCategoryGrid">
-            <i class="fas fa-times"></i>
-        </button>
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-3">
+
+            <!-- Edit -->
+            <button id="editCategoryGrid"
+                class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition flex items-center justify-center">
+
+                <i class="fas fa-pen"></i>
+
+            </button>
+
+            <!-- Close -->
+            <button id="closeCategoryGrid"
+                class="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition flex items-center justify-center">
+
+                <i class="fas fa-times"></i>
+
+            </button>
+
+        </div>
+
     </div>
     <div class="grid grid-cols-3 gap-1 justify-items-center category-grid mb-4" id="floatingCategoryGrid"></div>
 </div>
 
 <!-- Floating Wallet Grid -->
 <div
-    class="wallet-grid-floating hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50 max-h-80 overflow-y-auto">
+    class="wallet-grid-floating hidden fixed bottom-15 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50 max-h-80 overflow-y-auto">
     <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold text-gray-700">Pilih Dompet</h3>
-        <button class="text-gray-500 hover:text-gray-700" id="closeWalletGrid">
+        {{-- <button class="text-gray-500 hover:text-gray-700" id="closeWalletGrid">
             <i class="fas fa-times"></i>
-        </button>
+        </button> --}}
+        <!-- Action Buttons -->
+        <div class="flex items-center gap-3">
+
+            <!-- Edit -->
+            <button id="editWalletGrid"
+                class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition flex items-center justify-center">
+
+                <i class="fas fa-pen"></i>
+
+            </button>
+
+            <!-- Close -->
+            <button id="closeWalletGrid"
+                class="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition flex items-center justify-center">
+
+                <i class="fas fa-times"></i>
+
+            </button>
+
+        </div>
     </div>
     <div class="grid grid-cols-3 gap-1 justify-items-center wallet-grid" id="floatingWalletGrid"></div>
 </div>
 
 <!-- Custom Numeric Keyboard -->
-<div class="numeric-keyboard-floating hidden fixed bottom-0 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50 max-h-80 overflow-y-auto"
+<div class="numeric-keyboard-floating hidden fixed bottom-15 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50 max-h-80 overflow-y-auto"
     id="numericKeyboard">
     <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold text-gray-700">Jumlah</h3>
@@ -279,9 +317,132 @@
     </div>
 </div>
 
+<!-- Category Manager State -->
+<div id="categoryManagerState" class="hidden fixed inset-0 bg-gray-50 z-[999] flex flex-col">
+
+    <!-- Header -->
+    <div class="bg-white shadow sticky top-0 z-10">
+
+        <div class="flex items-center justify-between px-4 py-4">
+
+            <div class="flex items-center gap-4">
+
+                <!-- Back -->
+                <button id="closeCategoryManager" class="text-gray-600 hover:text-gray-900 transition text-xl">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                </button>
+
+                <div>
+                    <h2 id="categoryManagerTitle" class="text-xl font-bold text-gray-900">
+                        Kelola Kategori
+                    </h2>
+
+                    <p id="categoryManagerSubtitle" class="text-sm text-gray-500">
+                        Pengeluaran
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Add -->
+            <button id="btnAddCategory"
+                class="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow">
+
+                <i class="fas fa-plus"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Content -->
+    <div id="categoryManagerContent" class="flex-1 overflow-y-auto p-4 space-y-3">
+
+    </div>
+
+</div>
+
+<div id="formCategoryModal" class="hidden fixed inset-0 bg-black/50 z-[1000] overflow-y-auto">
+
+    <div class="flex items-end justify-center min-h-screen">
+
+        <div id="formCategoryContainer"
+            class="bg-white w-full max-w-2xl rounded-t-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Wallet Manager State -->
+<div id="walletManagerState" class="hidden fixed inset-0 bg-gray-50 z-[999] flex flex-col">
+
+    <!-- Header -->
+    <div class="bg-white shadow sticky top-0 z-10">
+
+        <div class="flex items-center justify-between px-4 py-4">
+
+            <div class="flex items-center gap-4">
+
+                <!-- Back -->
+                <button id="closeWalletManager" class="text-gray-600 hover:text-gray-900 transition text-xl">
+
+                    <i class="fas fa-arrow-left"></i>
+
+                </button>
+
+                <div>
+                    <h2 id="walletManagerTitle" class="text-xl font-bold text-gray-900">
+                        Kelola Dompet
+                    </h2>
+
+                    <p id="walletManagerSubtitle" class="text-sm text-gray-500">
+                        Pengeluaran
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Add -->
+            <button id="btnAddWallet"
+                class="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow">
+
+                <i class="fas fa-plus"></i>
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- Content -->
+    <div id="walletManagerContent" class="flex-1 overflow-y-auto p-4 space-y-3">
+
+    </div>
+
+</div>
+
+<div id="formWalletModal" class="hidden fixed inset-0 bg-black/50 z-[1000] overflow-y-auto">
+
+    <div class="flex items-end justify-center min-h-screen">
+
+        <div id="formWalletContainer"
+            class="bg-white w-full max-w-2xl rounded-t-3xl shadow-2xl max-h-[90vh] overflow-y-auto">
+
+        </div>
+
+    </div>
+
+</div>
+
 <script>
+    const token = localStorage.getItem('api_token');
+
     $(document).ready(function() {
-        const token = localStorage.getItem('api_token');
 
         if (!token) {
             window.location.href = '/login';
@@ -290,6 +451,7 @@
 
         // Load wallets and categories
         loadWallets();
+        loadWalletGrid();
         loadCategories();
 
         // autofocus ke amount
@@ -423,14 +585,7 @@
 
         // Category selection
         $('#categoryDisplay').on('click', function() {
-            $('#floatingCategoryGrid').empty();
-            const categories = window.allCategories.filter(cat => cat.type === $(
-                'input[name="type"]:checked').val());
-            categories.forEach(cat => {
-                $('#floatingCategoryGrid').append(
-                    `<div class="category-item" data-id="${cat.id}" data-name="${cat.name}">${cat.name}</div>`
-                );
-            });
+            loadCategoriesByType($('input[name="type"]:checked').val());
             $('.focus-border').removeClass('focused');
             $(this).addClass('focused');
             $('.category-grid-floating').removeClass('hidden');
@@ -560,16 +715,18 @@
 
                     if (error.status === 422) {
                         const errors = error.responseJSON.errors || {};
-                        if(errors.length > 0) {
+                        if (errors.length > 0) {
                             $.each(errors, function(field, messages) {
                                 const errorClass = '.' + field + '-error';
-                                $(errorClass).text(messages[0]).removeClass('hidden');
+                                $(errorClass).text(messages[0]).removeClass(
+                                    'hidden');
                             });
                         } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: error.responseJSON?.message || 'Terjadi kesalahan'
+                                text: error.responseJSON?.message ||
+                                    'Terjadi kesalahan'
                             });
                         }
                     } else {
@@ -588,67 +745,506 @@
             history.back();
         });
 
-        function loadWallets() {
-            $.ajax({
-                url: '/api/wallets',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    window.allWallets = response.data || [];
-                }
-            });
-        }
+        // handle manage category state
+        $('#editCategoryGrid').on('click', function() {
 
-        function loadCategories() {
-            $.ajax({
-                url: '/api/categories',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    window.allCategories = response.data || [];
-                }
-            });
-        }
+            $('#categoryManagerState')
+                .removeClass('hidden');
 
-        function loadCategoriesByType(type) {
-            const categories = window.allCategories.filter(cat => cat.type === type);
-            $('#categoryGrid').empty();
-            categories.forEach(cat => {
-                $('#categoryGrid').append(
-                    `<div class="category-item" data-id="${cat.id}" data-name="${cat.name}">${cat.name}</div>`
-                );
-            });
-        }
+            loadManageCategories();
+        });
 
-        function updateAmountDisplay(value) {
-            if (value === '' || value === '0') {
-                $('#amountDisplay').val('0');
-            } else {
-                const numValue = parseInt(value.replace(/\D/g, '')) || 0;
-                $('#amountDisplay').val(numValue.toLocaleString('id-ID'));
+        $('#closeCategoryManager').on('click', function() {
+
+            $('#categoryManagerState')
+                .addClass('hidden');
+
+            const type = $('input[name="type"]:checked').val() || 'expense';
+            loadCategoriesByType(type);
+        });
+
+        $(document).on('click', '.btn-edit-category', function() {
+
+            const id = $(this).data('id');
+
+            openCategoryForm(id);
+
+        });
+
+        $(document).on('click', '.btn-delete-category', function() {
+            const id = $(this).data('id');
+            confirmDeleteCategory(id);
+        });
+
+        $('#btnAddCategory').on('click', function() {
+
+            openCategoryForm(null);
+
+        });
+
+        $('#formCategoryModal').on('click', function(e) {
+
+            if (e.target === this) {
+                closeFormCategoryModal();
             }
-        }
 
-        // Wallet selection
-        function setupWalletGrid(displayId, hiddenId) {
-            $(displayId).on('click', function() {
-                $('#floatingWalletGrid').empty();
-                const wallets = window.allWallets || [];
-                wallets.forEach(wallet => {
-                    $('#floatingWalletGrid').append(
-                        `<div class="wallet-item" data-id="${wallet.id}" data-name="${wallet.name}" data-balance="${wallet.balance}">${wallet.name}</div>`
-                    );
-                });
-                $('.focus-border').removeClass('focused');
-                $(this).addClass('focused');
-                $('.wallet-grid-floating').removeClass('hidden');
-                $('.numeric-keyboard-floating').addClass('hidden');
-                $('.category-grid-floating').addClass('hidden');
-            });
-        }
+        });
+
+        // handle closeTransactionModal        
+        $('#closeTransactionModal').on('click', function() {
+            history.back();
+        });
+
+
+        // handle manage wallet state
+        $('#editWalletGrid').on('click', function() {
+
+            $('#walletManagerState')
+                .removeClass('hidden');
+
+            loadManageWallets();
+        });
+
+        $('#closeWalletManager').on('click', function() {
+
+            $('#walletManagerState')
+                .addClass('hidden');
+
+            const type = $('input[name="type"]:checked').val() || 'expense';
+            setupWalletGrid('#walletDisplay', '#wallet_id');
+            setupWalletGrid('#fromWalletDisplay', '#from_wallet_id');
+            setupWalletGrid('#toWalletDisplay', '#to_wallet_id');
+        });
+
+        $(document).on('click', '.btn-edit-wallet', function() {
+
+            const id = $(this).data('id');
+
+            openWalletForm(id);
+
+        });
+
+        $(document).on('click', '.btn-delete-wallet', function() {
+            const id = $(this).data('id');
+            confirmDeleteWallet(id);
+        });
+
+        $('#btnAddWallet').on('click', function() {
+
+            openWalletForm(null);
+
+        });
     });
+
+    function loadWallets() {
+        $.ajax({
+            url: '/api/wallets',
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            success: function(response) {
+                window.allWallets = response.data || [];
+            }
+        });
+    }
+
+    function loadWalletGrid() {
+        $('#floatingWalletGrid').empty();
+        const wallets = window.allWallets || [];
+        wallets.forEach(wallet => {
+            $('#floatingWalletGrid').append(
+                `<div class="wallet-item" data-id="${wallet.id}" data-name="${wallet.name}" data-balance="${wallet.balance}">${wallet.name}</div>`
+            );
+        });
+    }
+
+    function loadCategories() {
+        $.ajax({
+            url: '/api/categories',
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token
+            },
+            success: function(response) {
+                window.allCategories = response.data || [];
+            }
+        });
+    }
+
+    function loadCategoriesByType(type) {
+        $('#floatingCategoryGrid').empty();
+        const categories = window.allCategories.filter(cat => cat.type === type);
+        categories.forEach(cat => {
+            $('#floatingCategoryGrid').append(
+                `<div class="category-item" data-id="${cat.id}" data-name="${cat.name}">${cat.name}</div>`
+            );
+        });
+    }
+
+    function updateAmountDisplay(value) {
+        if (value === '' || value === '0') {
+            $('#amountDisplay').val('0');
+        } else {
+            const numValue = parseInt(value.replace(/\D/g, '')) || 0;
+            $('#amountDisplay').val(numValue.toLocaleString('id-ID'));
+        }
+    }
+
+    // Wallet selection
+    function setupWalletGrid(displayId, hiddenId) {
+        $(displayId).on('click', function() {
+            loadWalletGrid();
+            $('.focus-border').removeClass('focused');
+            $(this).addClass('focused');
+            $('.wallet-grid-floating').removeClass('hidden');
+            $('.numeric-keyboard-floating').addClass('hidden');
+            $('.category-grid-floating').addClass('hidden');
+        });
+    }
+
+    function renderManageCategories(categories) {
+
+        let html = '';
+
+        categories.forEach(cat => {
+
+            const bgColor = `${cat.color}20`;
+
+            html += `
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 flex items-center justify-between shadow-sm">
+
+                <div class="flex items-center gap-4 flex-1 min-w-0">
+
+                    <div
+                        class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                        style="
+                            background-color:${bgColor};
+                            color:${cat.color};
+                        ">
+
+                        <i class="fas ${cat.icon}"></i>
+
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+
+                        <h3 class="font-semibold text-gray-900 truncate">
+                            ${cat.name}
+                        </h3>
+
+                        ${
+                            cat.description
+                            ? `
+                                <p class="text-xs text-gray-500 truncate">
+                                    ${cat.description}
+                                </p>
+                            `
+                            : ''
+                        }
+
+                    </div>
+
+                </div>
+
+                <div class="flex items-center gap-2 ml-3">
+
+                    <!-- Edit -->
+                    <button
+                        class="btn-edit-category w-10 h-10 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                        data-id="${cat.id}">
+
+                        <i class="fas fa-pen"></i>
+
+                    </button>
+
+                    <!-- Delete -->
+                    <button
+                        class="btn-delete-category w-10 h-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition"
+                        data-id="${cat.id}">
+
+                        <i class="fas fa-trash"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+        });
+
+        $('#categoryManagerContent').html(html);
+    }
+
+    function loadManageCategories() {
+
+        const type = $('input[name="type"]:checked').val() || 'expense';
+
+        $.ajax({
+
+            url: '/api/categories?type=' + type,
+
+            method: 'GET',
+
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+
+            success: function(response) {
+
+                const categories = response.data || [];
+
+                renderManageCategories(categories);
+                loadCategories();
+                loadCategoriesByType(type);
+
+            }
+
+        });
+
+    }
+
+    function openCategoryForm(id = null) {
+        const type = $('input[name="type"]:checked').val() || 'expense';
+
+        const url = id ?
+            `/settings/category/form/${id}?type=${type}` :
+            `/settings/category/form?type=${type}`;
+
+        $('#formCategoryContainer').load(url, function() {
+
+            $('#formCategoryModal')
+                .removeClass('hidden');
+
+        });
+
+    }
+
+    function closeFormCategoryModal() {
+
+        $('#formCategoryModal')
+            .addClass('hidden');
+
+        $('#formCategoryContainer')
+            .html('');
+
+        loadManageCategories();
+
+    };
+
+    function confirmDeleteCategory(id) {
+        Swal.fire({
+            title: 'Hapus Kategori?',
+            text: 'Tindakan ini tidak dapat dibatalkan',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal'
+        }).then(result => {
+            if (result.isConfirmed) {
+                deleteCategory(id);
+            }
+        });
+    }
+
+    function deleteCategory(id) {
+        $.ajax({
+            url: `/api/categories/${id}`,
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Terhapus',
+                    text: 'Kategori berhasil dihapus',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    loadManageCategories();
+                });
+            },
+            error: function(error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.responseJSON?.message || 'Gagal menghapus kategori'
+                });
+            }
+        });
+    }
+
+    function renderManageWallets(wallets) {
+
+        let html = '';
+
+        wallets.forEach(wallet => {
+
+            const bgColor = `${wallet.color}20`;
+
+            html += `
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 flex items-center justify-between shadow-sm">
+
+                <div class="flex items-center gap-4 flex-1 min-w-0">
+
+                    <div
+                        class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                        style="
+                            background-color:${bgColor};
+                            color:${wallet.color};
+                        ">
+
+                        <i class="fas ${wallet.icon}"></i>
+
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+
+                        <h3 class="font-semibold text-gray-900 truncate">
+                            ${wallet.name}
+                        </h3>
+
+                        ${
+                            wallet.description
+                            ? `
+                                <p class="text-xs text-gray-500 truncate">
+                                    ${wallet.description}
+                                </p>
+                            `
+                            : ''
+                        }
+
+                    </div>
+
+                </div>
+
+                <div class="flex items-center gap-2 ml-3">
+
+                    <!-- Edit -->
+                    <button
+                        class="btn-edit-wallet w-10 h-10 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition"
+                        data-id="${wallet.id}">
+
+                        <i class="fas fa-pen"></i>
+
+                    </button>
+
+                    <!-- Delete -->
+                    <button
+                        class="btn-delete-wallet w-10 h-10 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition"
+                        data-id="${wallet.id}">
+
+                        <i class="fas fa-trash"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+        });
+
+        $('#walletManagerContent').html(html);
+    }
+
+    function loadManageWallets() {
+
+        $.ajax({
+
+            url: '/api/wallets',
+
+            method: 'GET',
+
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+
+            success: function(response) {
+
+                const wallets = response.data || [];
+
+                renderManageWallets(wallets);
+                loadWallets();
+                loadWalletGrid();
+            }
+
+        });
+
+    }
+
+    function openWalletForm(id = null) {
+        const url = id ?
+            `/settings/wallet/form/${id}` :
+            `/settings/wallet/form`;
+
+        $('#formWalletContainer').load(url, function() {
+
+            $('#formWalletModal')
+                .removeClass('hidden');
+
+        });
+
+    }
+
+    function closeFormWalletModal() {
+
+        $('#formWalletModal')
+            .addClass('hidden');
+
+        $('#formWalletContainer')
+            .html('');
+
+        loadManageWallets();
+
+    };
+
+    function confirmDeleteWallet(id) {
+        Swal.fire({
+            title: 'Hapus Dompet?',
+            text: 'Tindakan ini tidak dapat dibatalkan',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal'
+        }).then(result => {
+            if (result.isConfirmed) {
+                deleteWallet(id);
+            }
+        });
+    }
+
+    function deleteWallet(id) {
+        $.ajax({
+            url: `/api/wallets/${id}`,
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Terhapus',
+                    text: 'Dompet berhasil dihapus',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    loadManageWallets();
+                });
+            },
+            error: function(error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.responseJSON?.message || 'Gagal menghapus dompet'
+                });
+            }
+        });
+    }
 </script>

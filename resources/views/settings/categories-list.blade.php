@@ -86,7 +86,7 @@
 
             $('#formModal').on('click', function(e) {
                 if (e.target === this) {
-                    closeModal();
+                    closeFormCategoryModal();
                 }
             });
 
@@ -167,7 +167,7 @@
             });
         }
 
-        function closeFormModal() {
+        function closeFormCategoryModal() {
             $('#formModal').addClass('hidden');
             $('#formContainer').html('');
         }

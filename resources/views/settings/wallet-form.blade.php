@@ -5,7 +5,7 @@
         <h2 class="text-xl font-bold text-gray-900" id="formTitle">
             Tambah Dompet
         </h2>
-        <button onclick="closeFormModal()" class="text-gray-600 hover:text-gray-900 transition">
+        <button onclick="closeFormWalletModal()" class="text-gray-600 hover:text-gray-900 transition">
             <i class="fas fa-times text-xl"></i>
         </button>
     </div>
@@ -51,7 +51,7 @@
                 id="submitBtn">
                 Tambah
             </button>
-            <button type="button" onclick="closeFormModal()"
+            <button type="button" onclick="closeFormWalletModal()"
                 class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 font-semibold py-3 rounded-lg transition">
                 Batal
             </button>
@@ -60,11 +60,10 @@
 </div>
 
 <script>
-    const token = localStorage.getItem('api_token');
-    const walletId = "{{ request('id') ?? null }}";
     
     $(document).ready(async function() {
-
+        const walletId = "{{ request('id') ?? null }}";
+        const token = localStorage.getItem('api_token');
         await loadWalletTypes();
 
         if (walletId) {
@@ -108,7 +107,7 @@
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        closeFormModal();
+                        closeFormWalletModal();
                         loadWallets();
                     });
                 },
@@ -134,7 +133,7 @@
     });
 
     function loadWalletTypes() {
-
+        const token = localStorage.getItem('api_token');
         return $.ajax({
             url: '/api/wallet-types',
             method: 'GET',
@@ -164,7 +163,7 @@
     }
 
     function loadWallet(walletId) {
-
+        const token = localStorage.getItem('api_token');
         return $.ajax({
             url: `/api/wallets/${walletId}`,
             method: 'GET',

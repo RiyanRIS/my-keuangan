@@ -102,7 +102,7 @@
             // Close form modal
             $('#formModal').on('click', function(e) {
                 if (e.target.id === 'formModal') {
-                    closeFormModal();
+                    closeFormWalletModal();
                 }
             });
         });
@@ -178,7 +178,7 @@
             });
         }
 
-        function closeFormModal() {
+        function closeFormWalletModal() {
             $('#formModal').addClass('hidden');
             $('#formContent').empty();
         }

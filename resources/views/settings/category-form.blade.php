@@ -5,7 +5,7 @@
         <h2 class="text-xl font-bold text-gray-900" id="formTitle">
             Tambah Kategori
         </h2>
-        <button onclick="closeFormModal()" class="text-gray-600 hover:text-gray-900 transition">
+        <button onclick="closeFormCategoryModal()" class="text-gray-600 hover:text-gray-900 transition">
             <i class="fas fa-times text-xl"></i>
         </button>
     </div>
@@ -56,7 +56,7 @@
             <button type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3 rounded-lg transition disabled:opacity-50" id="submitBtn">
                 Tambah
             </button>
-            <button type="button" onclick="closeFormModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 font-semibold py-3 rounded-lg transition">
+            <button type="button" onclick="closeFormCategoryModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 font-semibold py-3 rounded-lg transition">
                 Batal
             </button>
         </div>
@@ -191,7 +191,7 @@
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        closeFormModal();
+                        closeFormCategoryModal();
                         loadCategories();
                     });
                 },

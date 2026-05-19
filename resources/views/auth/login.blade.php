@@ -123,6 +123,34 @@
     </div>
 
     <script>
+        // Fungsi untuk mengecek validitas token API
+        function checkTokenValidity() {
+            const token = localStorage.getItem('api_token');
+            
+            if (!token) {
+                return; // Tidak ada token, tampilkan login form
+            }
+
+            // Verifikasi token dengan API
+            $.ajax({
+                url: '/api/auth/user',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Accept': 'application/json'
+                },
+                success: function(response) {
+                    // Token valid, redirect ke dashboard
+                    window.location.href = '/dashboard';
+                },
+                error: function(error) {
+                    // Token tidak valid atau expired, hapus dan tampilkan login form
+                    localStorage.removeItem('api_token');
+                    localStorage.removeItem('user');
+                }
+            });
+        }
+
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const icon = event.target;
@@ -139,6 +167,8 @@
         }
 
         $(document).ready(function() {
+            // Cek token validity saat halaman di-load
+            checkTokenValidity();
             $('#loginForm').on('submit', function(e) {
                 e.preventDefault();
 
