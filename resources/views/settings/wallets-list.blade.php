@@ -141,12 +141,19 @@
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
+                
+                // Get icon and color
+                const icon = wallet.icon || 'fa-wallet';
+                const color = wallet.color || '#3B82F6';
+                
+                // Calculate lighter background color (add opacity)
+                const bgColor = color + '20'; // Add 20 hex for transparency
 
                 html += `
                     <div class="wallet-item px-4 py-3 border-b border-gray-100 last:border-b-0 flex items-center space-x-4 hover:bg-gray-50 transition"
                          data-id="${wallet.id}">
-                        <div class="w-10 h-10 rounded flex items-center justify-center flex-shrink-0 bg-blue-100">
-                            <i class="fas fa-wallet text-blue-600"></i>
+                        <div class="w-10 h-10 rounded flex items-center justify-center flex-shrink-0" style="background-color: ${bgColor};">
+                            <i class="fas ${icon}" style="color: ${color};"></i>
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="font-semibold text-gray-900 truncate">${wallet.name}</p>

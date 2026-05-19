@@ -13,6 +13,8 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('wallet_type_id')->constrained('wallet_types')->cascadeOnDelete();
             $table->string('name');
+            $table->string('icon')->nullable();
+            $table->string('color')->nullable();
             $table->decimal('balance', 12, 2)->default(0);
             $table->timestamps();
             

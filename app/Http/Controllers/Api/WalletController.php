@@ -71,6 +71,8 @@ class WalletController extends BaseController
                 Rule::unique('wallets', 'name')->where('user_id', $userId),
             ],
             'balance' => 'nullable|numeric|min:0',
+            'icon' => 'nullable|string|max:50',
+            'color' => 'nullable|string|max:7',
         ]);
 
         $wallet = Wallet::create([
@@ -78,6 +80,8 @@ class WalletController extends BaseController
             'wallet_type_id' => $request->wallet_type_id,
             'name' => $request->name,
             'balance' => $request->balance ?? 0,
+            'icon' => $request->icon,
+            'color' => $request->color,
         ]);
 
         return ApiResponse::created(
@@ -122,11 +126,15 @@ class WalletController extends BaseController
                     ->ignore($wallet->id),
             ],
             'wallet_type_id' => 'required|integer|exists:wallet_types,id',
+            'icon' => 'nullable|string|max:50',
+            'color' => 'nullable|string|max:7',
         ]);
 
         $wallet->update([
             'name' => $request->name,
             'wallet_type_id' => $request->wallet_type_id,
+            'icon' => $request->icon ?? $wallet->icon,
+            'color' => $request->color ?? $wallet->color,
         ]);
 
         return ApiResponse::success(

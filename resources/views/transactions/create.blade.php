@@ -10,8 +10,8 @@
 
     .key-btn {
         width: 100%;
-        height: 100%;
-        margin: 10px;
+        height: 48px;
+        margin: 0;
         border: 1px solid #d1d5db;
         border-radius: 5px;
         background: #f9fafb;
@@ -29,7 +29,7 @@
     .category-item {
         width: 100%;
         height: 100%;
-        margin: 10px;
+        margin: 0px;
         border: 1px solid #d1d5db;
         border-radius: 5px;
         background: #f9fafb;
@@ -54,6 +54,87 @@
     .category-item.active {
         border-color: #3b82f6;
     }
+
+    /* Horizontal Chips */
+    .chip-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 20px;
+        background: #f3f4f6;
+        border: 1px solid #e5e7eb;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.2s;
+    }
+
+    .chip-btn:hover {
+        background: #e5e7eb;
+    }
+
+    .chip-btn.selected {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+    }
+
+    /* Chips Container */
+    .chips-container {
+        display: flex;
+        gap: 8px;
+        overflow-x-auto;
+        padding-bottom: 4px;
+        scroll-behavior: smooth;
+    }
+
+    .chips-container::-webkit-scrollbar {
+        height: 4px;
+    }
+
+    .chips-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .chips-container::-webkit-scrollbar-thumb {
+        background: #d1d5db;
+        border-radius: 2px;
+    }
+
+    /* DateTime Display */
+    .datetime-display {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+    }
+
+    .datetime-label {
+        font-size: 14px;
+        color: #6b7280;
+    }
+
+    .datetime-value {
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .datetime-edit-btn {
+        padding: 4px 12px;
+        font-size: 12px;
+        background: white;
+        border: 1px solid #d1d5db;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .datetime-edit-btn:hover {
+        background: #f3f4f6;
+    }
 </style>
 
 <!-- Modal Header -->
@@ -69,9 +150,29 @@
     <form id="transactionForm" class="space-y-3">
         @csrf
 
+        <!-- Date & Time -->
+        <div class="space-y-3">
+            <!-- DateTime Display -->
+            <div class="datetime-display">
+                <div>
+                    <div class="datetime-label">Tanggal & Waktu</div>
+                    <div class="datetime-value">
+                        <span id="dateTimeDisplay">-</span>
+                    </div>
+                </div>
+                <button type="button" class="datetime-edit-btn" id="editDateTimeBtn">
+                    Ubah waktu
+                </button>
+            </div>
+
+            <!-- Hidden inputs -->
+            <input type="hidden" id="transaction_date" name="transaction_date">
+            <input type="hidden" id="transaction_time" name="transaction_time">
+        </div>
+
         <!-- Transaction Type -->
         <div>
-            <div class="grid grid-cols-3 gap-3">
+            <div class="grid grid-cols-3 gap-2">
                 <label class="cursor-pointer">
                     <input type="radio" name="type" value="income" class="hidden">
                     <div
@@ -97,31 +198,10 @@
             <span class="text-red-500 text-sm type-error hidden mt-1 block"></span>
         </div>
 
-        <!-- Date and Time (1 baris) -->
-        <div class="flex space-x-4">
-            <div class="flex-1">
-                <div class="flex items-center space-x-4">
-                    <label for="transaction_date" class="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                        Tanggal
-                    </label>
-                    <input type="date" id="transaction_date" name="transaction_date"
-                        class="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
-                </div>
-                <span class="text-red-500 text-sm transaction_date-error hidden mt-1 block"></span>
-            </div>
-            <div class="flex-1">
-                <div class="flex items-center space-x-4">
-                    <input type="time" id="transaction_time" name="transaction_time"
-                        class="flex-1 px-4 py-2 border-2 border-gray-200 rounded-lg focus:outline-none focus:border-blue-500">
-                </div>
-                <span class="text-red-500 text-sm transaction_time-error hidden mt-1 block"></span>
-            </div>
-        </div>
-
         <!-- Amount -->
         <div>
-            <div class="flex items-center space-x-4">
-                <label for="amountDisplay" class="text-sm font-semibold text-gray-700 whitespace-nowrap">
+            <div class="space-y-2">
+                <label for="amountDisplay" class="block text-sm font-semibold text-gray-700 whitespace-nowrap">
                     Jumlah
                 </label>
                 <input type="hidden" id="amount" name="amount">
@@ -137,68 +217,52 @@
 
         <!-- Category (Income & Expense) -->
         <div id="categoryField" class="hidden">
-            <div class="flex items-center space-x-4">
-                <label for="category_id" class="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                    Kategori
-                </label>
-                <input type="hidden" id="category_id" name="category_id">
-                <div class="flex-1">
-                    <div class="border-2 border-gray-200 rounded-lg p-3 bg-gray-50 cursor-pointer focus-border"
-                        id="categoryDisplay">Pilih kategori...</div>
-                </div>
-            </div>
+            <button type="button" id="categoryDisplay"
+                class="w-full h-12 px-4 rounded-xl border border-gray-300 bg-white text-left flex items-center gap-3 font-medium text-gray-700 hover:bg-gray-50 transition">
+                <i class="fas fa-tag text-gray-400"></i>
+                <span id="categoryDisplayText">Pilih Kategori</span>
+            </button>
+            <input type="hidden" id="category_id" name="category_id">
             <span class="text-red-500 text-sm category_id-error hidden mt-1 block"></span>
         </div>
 
         <!-- Wallet Selection (Income & Expense) -->
         <div id="walletField" class="hidden">
-            <div class="flex items-center space-x-4">
-                <label for="wallet_id" class="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                    Dompet
-                </label>
-                <input type="hidden" id="wallet_id" name="wallet_id">
-                <div class="flex-1">
-                    <div class="border-2 border-gray-200 rounded-lg p-3 bg-gray-50 cursor-pointer focus-border"
-                        id="walletDisplay">Pilih dompet...</div>
-                </div>
-            </div>
+            <button type="button" id="walletDisplay"
+                class="w-full h-12 px-4 rounded-xl border border-gray-300 bg-white text-left flex items-center gap-3 font-medium text-gray-700 hover:bg-gray-50 transition">
+                <i class="fas fa-wallet text-gray-400"></i>
+                <span id="walletDisplayText">Pilih Dompet</span>
+            </button>
+            <input type="hidden" id="wallet_id" name="wallet_id">
             <span class="text-red-500 text-sm wallet_id-error hidden mt-1 block"></span>
         </div>
 
         <!-- From Wallet (Transfer) -->
         <div id="fromWalletField" class="hidden">
-            <div class="flex items-center space-x-4">
-                <label for="from_wallet_id" class="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                    Dari
-                </label>
-                <input type="hidden" id="from_wallet_id" name="from_wallet_id">
-                <div class="flex-1">
-                    <div class="border-2 border-gray-200 rounded-lg p-3 bg-gray-50 cursor-pointer focus-border"
-                        id="fromWalletDisplay">Pilih dompet asal...</div>
-                </div>
-            </div>
+            <button type="button" id="fromWalletDisplay"
+                class="w-full h-12 px-4 rounded-xl border border-gray-300 bg-white text-left flex items-center gap-3 font-medium text-gray-700 hover:bg-gray-50 transition">
+                <i class="fas fa-arrow-right text-gray-400"></i>
+                <span id="fromWalletDisplayText">Dari</span>
+            </button>
+            <input type="hidden" id="from_wallet_id" name="from_wallet_id">
             <span class="text-red-500 text-sm from_wallet_id-error hidden mt-1 block"></span>
         </div>
 
         <!-- To Wallet (Transfer) -->
         <div id="toWalletField" class="hidden">
-            <div class="flex items-center space-x-4">
-                <label for="to_wallet_id" class="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                    Ke
-                </label>
-                <input type="hidden" id="to_wallet_id" name="to_wallet_id">
-                <div class="flex-1">
-                    <div class="border-2 border-gray-200 rounded-lg p-3 bg-gray-50 cursor-pointer focus-border"
-                        id="toWalletDisplay">Pilih dompet tujuan...</div>
-                </div>
-            </div>
+            <button type="button" id="toWalletDisplay"
+                class="w-full h-12 px-4 rounded-xl border border-gray-300 bg-white text-left flex items-center gap-3 font-medium text-gray-700 hover:bg-gray-50 transition">
+                <i class="fas fa-arrow-right text-gray-400"></i>
+                <span id="toWalletDisplayText">Ke</span>
+            </button>
+            <input type="hidden" id="to_wallet_id" name="to_wallet_id">
             <span class="text-red-500 text-sm to_wallet_id-error hidden mt-1 block"></span>
         </div>
 
         <!-- Note -->
         <div>
-            <div class="flex items-center space-x-4">
-                <label for="note" class="text-sm font-semibold text-gray-700 whitespace-nowrap">
+            <div class="space-y-2">
+                <label for="note" class="block text-sm font-semibold text-gray-700 whitespace-nowrap">
                     Catatan
                 </label>
                 <textarea id="note" name="note"
@@ -209,15 +273,12 @@
         </div>
 
         <!-- Submit & Lanjut Button dalam 1 baris -->
-        <div class="flex space-x-4 mt-6">
-            <button type="submit"
-                class="w-3/4 flex bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 rounded-lg transition duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
-                id="submitBtn">
+        <div class="space-y-3 mt-6">
+            <button type="submit" class="w-full bg-blue-600 text-white font-medium py-3 rounded-xl" id="submitBtn">
                 <i class="fas fa-save"></i>
                 <span>Simpan Transaksi</span>
             </button>
-            <button type="button"
-                class="w-1/4 flex bg-gradient-to-r from-gray-600 to-gray-600 hover:from-gray-700 hover:to-gray-700 text-white font-bold py-3 rounded-lg transition duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
+            <button type="button" class="w-full bg-gray-100 text-gray-700 font-medium py-3 rounded-xl"
                 id="continueBtn">
                 <i class="fas fa-arrow-right"></i>
                 <span>Lanjut</span>
@@ -226,70 +287,35 @@
     </form>
 </div>
 
-<!-- Floating Category Grid -->
-<div
-    class="category-grid-floating hidden fixed bottom-15 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50 max-h-80 overflow-y-auto">
-    <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-gray-700">Pilih Kategori</h3>
-        <!-- Action Buttons -->
-        <div class="flex items-center gap-3">
-
-            <!-- Edit -->
-            <button id="editCategoryGrid"
-                class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition flex items-center justify-center">
-
-                <i class="fas fa-pen"></i>
-
-            </button>
-
-            <!-- Close -->
-            <button id="closeCategoryGrid"
-                class="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition flex items-center justify-center">
-
-                <i class="fas fa-times"></i>
-
-            </button>
-
-        </div>
-
-    </div>
-    <div class="grid grid-cols-3 gap-1 justify-items-center category-grid mb-4" id="floatingCategoryGrid"></div>
-</div>
-
-<!-- Floating Wallet Grid -->
-<div
-    class="wallet-grid-floating hidden fixed bottom-15 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50 max-h-80 overflow-y-auto">
-    <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold text-gray-700">Pilih Dompet</h3>
-        {{-- <button class="text-gray-500 hover:text-gray-700" id="closeWalletGrid">
+<!-- DateTime Picker Bottom Sheet -->
+<div id="dateTimePickerSheet"
+    class="hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl z-50 max-h-[50vh] overflow-y-auto">
+    <div class="sticky top-0 bg-white border-b border-gray-200 p-4 flex items-center justify-between rounded-t-3xl">
+        <h3 class="font-semibold text-gray-900">Ubah Waktu</h3>
+        <button type="button" class="text-gray-600 hover:text-gray-900" id="closeDateTimeSheet">
             <i class="fas fa-times"></i>
-        </button> --}}
-        <!-- Action Buttons -->
-        <div class="flex items-center gap-3">
-
-            <!-- Edit -->
-            <button id="editWalletGrid"
-                class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition flex items-center justify-center">
-
-                <i class="fas fa-pen"></i>
-
-            </button>
-
-            <!-- Close -->
-            <button id="closeWalletGrid"
-                class="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition flex items-center justify-center">
-
-                <i class="fas fa-times"></i>
-
-            </button>
-
-        </div>
+        </button>
     </div>
-    <div class="grid grid-cols-3 gap-1 justify-items-center wallet-grid" id="floatingWalletGrid"></div>
+    <div class="p-4 space-y-4">
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Tanggal</label>
+            <input type="date" id="dateTimePickerDate"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Jam</label>
+            <input type="time" id="dateTimePickerTime"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button type="button" class="w-full bg-blue-600 text-white py-3 rounded-lg font-medium"
+            id="confirmDateTimeBtn">
+            Simpan
+        </button>
+    </div>
 </div>
 
 <!-- Custom Numeric Keyboard -->
-<div class="numeric-keyboard-floating hidden fixed bottom-15 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50 max-h-80 overflow-y-auto"
+<div class="numeric-keyboard-floating hidden fixed bottom-15 left-0 right-0 bg-white border-t-2 border-gray-200 p-4 z-50 h-[30vh] overflow-y-auto"
     id="numericKeyboard">
     <div class="flex justify-between items-center mb-4">
         <h3 class="text-lg font-semibold text-gray-700">Jumlah</h3>
@@ -442,7 +468,7 @@
 <script>
     const token = localStorage.getItem('api_token');
 
-    $(document).ready(function() {
+    $(document).ready(async function() {
 
         if (!token) {
             window.location.href = '/login';
@@ -450,17 +476,20 @@
         }
 
         // Load wallets and categories
-        loadWallets();
-        loadWalletGrid();
-        loadCategories();
+        await loadWallets();
+        await loadCategories();
 
         // autofocus ke amount
         $('#amountDisplay').focus();
         $('.numeric-keyboard-floating').removeClass('hidden');
 
         // Set today's date and current time
-        $('#transaction_date').val(new Date().toISOString().split('T')[0]);
-        $('#transaction_time').val(new Date().toTimeString().split(' ')[0].substring(0, 5));
+        const now = new Date();
+        $('#transaction_date').val(now.toISOString().split('T')[0]);
+        $('#transaction_time').val(now.toTimeString().split(' ')[0].substring(0, 5));
+
+        // Initialize datetime display
+        updateDateTimeDisplay();
 
         // Default to expense
         $('input[name="type"][value="expense"]').prop('checked', true);
@@ -479,49 +508,57 @@
             // Hide all conditional fields
             $('#walletField, #categoryField, #fromWalletField, #toWalletField').addClass('hidden');
 
-            if (type === 'income' || type === 'expense') {
-                $('#walletField, #categoryField').removeClass('hidden');
-                loadCategoriesByType(type);
-            } else if (type === 'transfer') {
-                $('#fromWalletField, #toWalletField').removeClass('hidden');
-            }
-
-            $('#categoryDisplay').text("Pilih kategori...");
-            $('#walletDisplay').text("Pilih dompet...");
-            $('#fromWalletDisplay').text("Pilih dompet...");
-            $('#toWalletDisplay').text("Pilih dompet...");
-
+            // Clear selections
             $('#amount').val('');
             $('#category_id').val('');
             $('#wallet_id').val('');
             $('#from_wallet_id').val('');
             $('#to_wallet_id').val('');
 
-            setupWalletGrid('#walletDisplay', '#wallet_id');
-            setupWalletGrid('#fromWalletDisplay', '#from_wallet_id');
-            setupWalletGrid('#toWalletDisplay', '#to_wallet_id');
+            if (type === 'income' || type === 'expense') {
+                $('#walletField, #categoryField').removeClass('hidden');
+            } else if (type === 'transfer') {
+                $('#fromWalletField, #toWalletField').removeClass('hidden');
+            }
 
             $('.focus-border').removeClass('focused');
             $('#amountDisplay').focus();
 
             $('.numeric-keyboard-floating').removeClass('hidden');
-            $('.wallet-grid-floating').addClass('hidden');
-            $('.category-grid-floating').addClass('hidden');
+            $('#dateTimePickerSheet').addClass('hidden');
+        });
+
+        // DateTime picker
+        $('#editDateTimeBtn').on('click', function() {
+            $('#dateTimePickerDate').val($('#transaction_date').val());
+            $('#dateTimePickerTime').val($('#transaction_time').val());
+            $('#dateTimePickerSheet').removeClass('hidden');
+            $('.numeric-keyboard-floating').addClass('hidden');
+        });
+
+        $('#closeDateTimeSheet').on('click', function() {
+            $('#dateTimePickerSheet').addClass('hidden');
+        });
+
+        $('#confirmDateTimeBtn').on('click', function() {
+            const date = $('#dateTimePickerDate').val();
+            const time = $('#dateTimePickerTime').val();
+            if (date && time) {
+                $('#transaction_date').val(date);
+                $('#transaction_time').val(time);
+                updateDateTimeDisplay();
+                $('#dateTimePickerSheet').addClass('hidden');
+            }
         });
 
         // Custom Numeric Keyboard
         $('#amountDisplay').on('focus', function() {
-            $('.focus-border').removeClass('focused');
             $('.numeric-keyboard-floating').removeClass('hidden');
-            $('.wallet-grid-floating').addClass('hidden');
-            $('.category-grid-floating').addClass('hidden');
+            $('#dateTimePickerSheet').addClass('hidden');
         });
 
         $('#closeKeyboard').on('click', function() {
-            $('.focus-border').removeClass('focused');
             $('.numeric-keyboard-floating').addClass('hidden');
-            $('.wallet-grid-floating').addClass('hidden');
-            $('.category-grid-floating').addClass('hidden');
         });
 
         $('.key-btn').not('#closeKeyboard, #backspace, #done').on('click', function() {
@@ -540,83 +577,30 @@
         });
 
         $('#done').on('click', function() {
-            $('.focus-border').removeClass('focused');
             $('.numeric-keyboard-floating').addClass('hidden');
-            $('.wallet-grid-floating').addClass('hidden');
-            $('.category-grid-floating').addClass('hidden');
-            $('#categoryDisplay').click();
         });
 
-        $('#floatingWalletGrid').on('click', '.wallet-item', function() {
-            const id = $(this).data('id');
-            const name = $(this).data('name');
-            const balance = $(this).data('balance');
-            // Determine which field to update based on context
-            if ($('#walletField').is(':visible')) {
-                $('#wallet_id').val(id);
-                $('#walletDisplay').text(`${name} - Rp ${parseFloat(balance).toLocaleString('id-ID')}`);
-            } else if ($('#fromWalletField').is(':visible')) {
-                $('#from_wallet_id').val(id);
-                $('#fromWalletDisplay').text(
-                    `${name} - Rp ${parseFloat(balance).toLocaleString('id-ID')}`);
-            } else if ($('#toWalletField').is(':visible')) {
-                $('#to_wallet_id').val(id);
-                $('#toWalletDisplay').text(
-                    `${name} - Rp ${parseFloat(balance).toLocaleString('id-ID')}`);
-            }
-            $('#floatingWalletGrid .wallet-item').removeClass('active');
-            $(this).addClass('active');
-            $('.focus-border').removeClass('focused');
-            $('.wallet-grid-floating').addClass('hidden');
-            $('.numeric-keyboard-floating').addClass('hidden');
-            $('.category-grid-floating').addClass('hidden');
-        });
-
-        $('#closeWalletGrid').on('click', function() {
-            $('.focus-border').removeClass('focused');
-            $('.numeric-keyboard-floating').addClass('hidden');
-            $('.wallet-grid-floating').addClass('hidden');
-            $('.category-grid-floating').addClass('hidden');
-        });
-
-        setupWalletGrid('#walletDisplay', '#wallet_id');
-        setupWalletGrid('#fromWalletDisplay', '#from_wallet_id');
-        setupWalletGrid('#toWalletDisplay', '#to_wallet_id');
-
-        // Category selection
+        // Category & Wallet selector button clicks
         $('#categoryDisplay').on('click', function() {
-            loadCategoriesByType($('input[name="type"]:checked').val());
-            $('.focus-border').removeClass('focused');
-            $(this).addClass('focused');
-            $('.category-grid-floating').removeClass('hidden');
-            $('.numeric-keyboard-floating').addClass('hidden');
-            $('.wallet-grid-floating').addClass('hidden');
+            $('#categoryManagerState').removeClass('hidden');
+            loadManageCategories();
         });
 
-        $('#floatingCategoryGrid').on('click', '.category-item', function() {
-            const id = $(this).data('id');
-            const name = $(this).data('name');
-            $('#category_id').val(id);
-            $('#categoryDisplay').text(name);
-            $('#floatingCategoryGrid .category-item').removeClass('active');
-            $(this).addClass('active');
-            $('.focus-border').removeClass('focused');
-            $('.category-grid-floating').addClass('hidden');
-            $('.numeric-keyboard-floating').addClass('hidden');
-            $('#walletDisplay').click();
-
+        $('#walletDisplay').on('click', function() {
+            $('#walletManagerState').removeClass('hidden');
+            loadManageWallets();
         });
 
-        $('#closeCategoryGrid').on('click', function() {
-            $('.focus-border').removeClass('focused');
-            $('.numeric-keyboard-floating').addClass('hidden');
-            $('.wallet-grid-floating').addClass('hidden');
-            $('.category-grid-floating').addClass('hidden');
+        $('#fromWalletDisplay').on('click', function() {
+            $('#walletManagerState').removeClass('hidden');
+            $('#walletManagerState').data('selectTarget', 'from_wallet_id');
+            loadManageWallets();
         });
 
-        $('#note').on('focus', function() {
-            $('.focus-border').removeClass('focused');
-            $(this).addClass('focused');
+        $('#toWalletDisplay').on('click', function() {
+            $('#walletManagerState').removeClass('hidden');
+            $('#walletManagerState').data('selectTarget', 'to_wallet_id');
+            loadManageWallets();
         });
 
         // Continue button - cycle through focus
@@ -629,13 +613,19 @@
             const currentToWallet = $('#to_wallet_id').val();
 
             if (type === 'income' || type === 'expense') {
-                // Order: Amount → Category → Wallet → Submit
+                // Order: Amount → Category → Wallet → Note
                 if (!currentAmount) {
                     $('#amountDisplay').focus();
                 } else if (!currentCategory) {
-                    $('#categoryDisplay').click();
+                    // Scroll to category
+                    $('#categoryField').get(0).scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 } else if (!currentWallet) {
-                    $('#walletDisplay').click();
+                    // Scroll to wallet
+                    $('#walletField').get(0).scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 } else {
                     $('#submitBtn').click();
                 }
@@ -644,9 +634,13 @@
                 if (!currentAmount) {
                     $('#amountDisplay').focus();
                 } else if (!currentFromWallet) {
-                    $('#fromWalletDisplay').click();
+                    $('#fromWalletField').get(0).scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 } else if (!currentToWallet) {
-                    $('#toWalletDisplay').click();
+                    $('#toWalletField').get(0).scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 } else {
                     $('#submitBtn').click();
                 }
@@ -733,7 +727,8 @@
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: error.responseJSON?.message || 'Terjadi kesalahan'
+                            text: error.responseJSON?.message ||
+                                'Terjadi kesalahan'
                         });
                     }
                 }
@@ -746,140 +741,216 @@
         });
 
         // handle manage category state
-        $('#editCategoryGrid').on('click', function() {
-
-            $('#categoryManagerState')
-                .removeClass('hidden');
-
+        $(document).on('click', '#editCategoryGrid, .edit-category-btn', function() {
+            $('#categoryManagerState').removeClass('hidden');
             loadManageCategories();
         });
 
+        // handle manage wallet state
+        $(document).on('click', '#editWalletGrid, .edit-wallet-btn', function() {
+            $('#walletManagerState').removeClass('hidden');
+            loadManageWallets();
+        });
+
         $('#closeCategoryManager').on('click', function() {
-
-            $('#categoryManagerState')
-                .addClass('hidden');
-
-            const type = $('input[name="type"]:checked').val() || 'expense';
-            loadCategoriesByType(type);
+            $('#categoryManagerState').addClass('hidden');
         });
 
-        $(document).on('click', '.btn-edit-category', function() {
+        $('#closeWalletManager').on('click', function() {
+            $('#walletManagerState').addClass('hidden');
+            $('#walletManagerState').removeData('selectTarget');
+        });
 
+        // Category selection from manager
+        $(document).on('click', '.btn-edit-category, .btn-select-category', function(e) {
+            if ($(this).hasClass('btn-edit-category')) {
+                e.stopPropagation();
+                const id = $(this).data('id');
+                openCategoryForm(id);
+            }
+        });
+
+        // Click category item to select
+        $(document).on('click', '#categoryManagerContent > div', function() {
+            const categoryBtn = $(this).find('.btn-edit-category');
+            if (categoryBtn.length === 0) return;
+
+            const id = categoryBtn.data('id');
+            const name = $(this).find('h3').text().trim();
+            const icon = $(this).find('i').attr('class');
+
+            $('#category_id').val(id);
+            $('#categoryDisplay').html(
+                `<i class="fas ${icon} text-gray-400"></i><span id="categoryDisplayText">${name}</span>`
+                );
+
+            $('#categoryManagerState').addClass('hidden');
+        });
+
+        // Wallet selection from manager
+        $(document).on('click', '#walletManagerContent > div', function() {
+            const id = $(this).find('.btn-edit-wallet').data('id');
+            const name = $(this).find('h3').text().trim();
+            const icon = $(this).find('i').attr('class');
+
+            const selectTarget = $('#walletManagerState').data('selectTarget') || 'wallet_id';
+
+            $(`#${selectTarget}`).val(id);
+
+            // Update appropriate button
+            if (selectTarget === 'wallet_id') {
+                $('#walletDisplay').html(
+                    `<i class="fas ${icon} text-gray-400"></i><span id="walletDisplayText">${name}</span>`
+                    );
+            } else if (selectTarget === 'from_wallet_id') {
+                $('#fromWalletDisplay').html(
+                    `<i class="fas ${icon} text-gray-400"></i><span id="fromWalletDisplayText">${name}</span>`
+                    );
+            } else if (selectTarget === 'to_wallet_id') {
+                $('#toWalletDisplay').html(
+                    `<i class="fas ${icon} text-gray-400"></i><span id="toWalletDisplayText">${name}</span>`
+                    );
+            }
+
+            $('#walletManagerState').addClass('hidden');
+            $('#walletManagerState').removeData('selectTarget');
+        });
+
+        // Category & Wallet selector button clicks
+        $('#categoryDisplay').on('click', function() {
+            $('#categoryManagerState').removeClass('hidden');
+            loadManageCategories();
+        });
+
+        $('#walletDisplay').on('click', function() {
+            $('#walletManagerState').removeClass('hidden');
+            $('#walletManagerState').removeData('selectTarget');
+            loadManageWallets();
+        });
+
+        $('#fromWalletDisplay').on('click', function() {
+            $('#walletManagerState').removeClass('hidden');
+            $('#walletManagerState').data('selectTarget', 'from_wallet_id');
+            loadManageWallets();
+        });
+
+        $('#toWalletDisplay').on('click', function() {
+            $('#walletManagerState').removeClass('hidden');
+            $('#walletManagerState').data('selectTarget', 'to_wallet_id');
+            loadManageWallets();
+        });
+
+        // Close manager states
+        $('#closeCategoryManager').on('click', function() {
+            $('#categoryManagerState').addClass('hidden');
+        });
+
+        $('#closeWalletManager').on('click', function() {
+            $('#walletManagerState').addClass('hidden');
+            $('#walletManagerState').removeData('selectTarget');
+        });
+
+        // Edit/Delete button handlers
+        $(document).on('click', '.btn-edit-category', function(e) {
+            e.stopPropagation();
             const id = $(this).data('id');
-
             openCategoryForm(id);
-
         });
 
-        $(document).on('click', '.btn-delete-category', function() {
+        $(document).on('click', '.btn-delete-category', function(e) {
+            e.stopPropagation();
             const id = $(this).data('id');
             confirmDeleteCategory(id);
         });
 
-        $('#btnAddCategory').on('click', function() {
-
-            openCategoryForm(null);
-
-        });
-
-        $('#formCategoryModal').on('click', function(e) {
-
-            if (e.target === this) {
-                closeFormCategoryModal();
-            }
-
-        });
-
-        // handle closeTransactionModal        
-        $('#closeTransactionModal').on('click', function() {
-            history.back();
-        });
-
-
-        // handle manage wallet state
-        $('#editWalletGrid').on('click', function() {
-
-            $('#walletManagerState')
-                .removeClass('hidden');
-
-            loadManageWallets();
-        });
-
-        $('#closeWalletManager').on('click', function() {
-
-            $('#walletManagerState')
-                .addClass('hidden');
-
-            const type = $('input[name="type"]:checked').val() || 'expense';
-            setupWalletGrid('#walletDisplay', '#wallet_id');
-            setupWalletGrid('#fromWalletDisplay', '#from_wallet_id');
-            setupWalletGrid('#toWalletDisplay', '#to_wallet_id');
-        });
-
-        $(document).on('click', '.btn-edit-wallet', function() {
-
+        $(document).on('click', '.btn-edit-wallet', function(e) {
+            e.stopPropagation();
             const id = $(this).data('id');
-
             openWalletForm(id);
-
         });
 
-        $(document).on('click', '.btn-delete-wallet', function() {
+        $(document).on('click', '.btn-delete-wallet', function(e) {
+            e.stopPropagation();
             const id = $(this).data('id');
             confirmDeleteWallet(id);
         });
 
+        $('#btnAddCategory').on('click', function() {
+            openCategoryForm(null);
+        });
+
         $('#btnAddWallet').on('click', function() {
-
             openWalletForm(null);
+        });
 
+        $('#formCategoryModal').on('click', function(e) {
+            if (e.target === this) {
+                closeFormCategoryModal();
+            }
+        });
+
+        $('#formWalletModal').on('click', function(e) {
+            if (e.target === this) {
+                closeFormWalletModal();
+            }
         });
     });
 
-    function loadWallets() {
-        $.ajax({
-            url: '/api/wallets',
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + token
-            },
-            success: function(response) {
-                window.allWallets = response.data || [];
-            }
+    async function loadWallets() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '/api/wallets',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function(response) {
+                    window.allWallets = response.data || [];
+                    resolve();
+                },
+                error: function(error) {
+                    reject(error);
+                }
+            });
         });
     }
 
-    function loadWalletGrid() {
-        $('#floatingWalletGrid').empty();
-        const wallets = window.allWallets || [];
-        wallets.forEach(wallet => {
-            $('#floatingWalletGrid').append(
-                `<div class="wallet-item" data-id="${wallet.id}" data-name="${wallet.name}" data-balance="${wallet.balance}">${wallet.name}</div>`
-            );
+    async function loadCategories() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: '/api/categories',
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + token
+                },
+                success: function(response) {
+                    window.allCategories = response.data || [];
+                    resolve();
+                },
+                error: function(error) {
+                    reject(error);
+                }
+            });
         });
     }
 
-    function loadCategories() {
-        $.ajax({
-            url: '/api/categories',
-            method: 'GET',
-            headers: {
-                'Authorization': 'Bearer ' + token
-            },
-            success: function(response) {
-                window.allCategories = response.data || [];
-            }
-        });
-    }
+    function updateDateTimeDisplay() {
+        const date = $('#transaction_date').val();
+        const time = $('#transaction_time').val();
 
-    function loadCategoriesByType(type) {
-        $('#floatingCategoryGrid').empty();
-        const categories = window.allCategories.filter(cat => cat.type === type);
-        categories.forEach(cat => {
-            $('#floatingCategoryGrid').append(
-                `<div class="category-item" data-id="${cat.id}" data-name="${cat.name}">${cat.name}</div>`
-            );
-        });
+        if (date && time) {
+            const dateObj = new Date(date + 'T' + time);
+            const options = {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            const formatted = dateObj.toLocaleDateString('id-ID', options);
+            $('#dateTimeDisplay').text(formatted);
+        }
     }
 
     function updateAmountDisplay(value) {
@@ -889,18 +960,6 @@
             const numValue = parseInt(value.replace(/\D/g, '')) || 0;
             $('#amountDisplay').val(numValue.toLocaleString('id-ID'));
         }
-    }
-
-    // Wallet selection
-    function setupWalletGrid(displayId, hiddenId) {
-        $(displayId).on('click', function() {
-            loadWalletGrid();
-            $('.focus-border').removeClass('focused');
-            $(this).addClass('focused');
-            $('.wallet-grid-floating').removeClass('hidden');
-            $('.numeric-keyboard-floating').addClass('hidden');
-            $('.category-grid-floating').addClass('hidden');
-        });
     }
 
     function renderManageCategories(categories) {
@@ -996,7 +1055,6 @@
 
                 renderManageCategories(categories);
                 loadCategories();
-                loadCategoriesByType(type);
 
             }
 
@@ -1169,7 +1227,6 @@
 
                 renderManageWallets(wallets);
                 loadWallets();
-                loadWalletGrid();
             }
 
         });
@@ -1247,4 +1304,21 @@
             }
         });
     }
+
+    // Wallet form modal event handlers
+    $(document).on('click', '.btn-edit-wallet', function() {
+        const id = $(this).data('id');
+        openWalletForm(id);
+    });
+
+    $(document).on('click', '.btn-delete-wallet', function() {
+        const id = $(this).data('id');
+        confirmDeleteWallet(id);
+    });
+
+    $('#formWalletModal').on('click', function(e) {
+        if (e.target === this) {
+            closeFormWalletModal();
+        }
+    });
 </script>

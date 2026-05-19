@@ -13,6 +13,8 @@ class WalletResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'balance' => (float) $this->balance,
+            'icon' => $this->icon,
+            'color' => $this->color,
             'wallet_type' => [
                 'id' => $this->walletType?->id,
                 'name' => $this->walletType?->name,
