@@ -425,8 +425,14 @@
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
+                        // Update cache immediately (no need to fetch)
+                        if (isEdit) {
+                            CacheManager.updateCategoryInCache(categoryId, response.data);
+                        } else {
+                            CacheManager.addCategoryToCache(response.data);
+                        }
+                        
                         closeFormCategoryModal();
-                        loadCategories();
                     });
                 },
                 error: function(error) {

@@ -475,9 +475,15 @@
             return;
         }
 
-        // Load wallets and categories
-        await loadWallets();
-        await loadCategories();
+        // Load wallets and categories from cache (will be ready from dashboard init)
+        // If cache manager not available yet, wait for it
+        if (!window.appData) {
+            console.warn('Master data not ready yet, initializing...');
+            await CacheManager.initMasterData();
+        }
+
+        window.allWallets = CacheManager.getAllWallets();
+        window.allCategories = CacheManager.getAllCategories();
 
         // autofocus ke amount
         $('#amountDisplay').focus();
@@ -896,44 +902,9 @@
         });
     });
 
-    async function loadWallets() {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: '/api/wallets',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    window.allWallets = response.data || [];
-                    resolve();
-                },
-                error: function(error) {
-                    reject(error);
-                }
-            });
-        });
-    }
-
-    async function loadCategories() {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: '/api/categories',
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Bearer ' + token
-                },
-                success: function(response) {
-                    window.allCategories = response.data || [];
-                    resolve();
-                },
-                error: function(error) {
-                    reject(error);
-                }
-            });
-        });
-    }
-
+    // Wallets and categories are now cached and loaded from window.appData
+    // See cache-manager.js for cache management logic
+    
     function updateDateTimeDisplay() {
         const date = $('#transaction_date').val();
         const time = $('#transaction_time').val();
@@ -1036,30 +1007,14 @@
     }
 
     function loadManageCategories() {
-
+        // Get categories from cache instead of API
         const type = $('input[name="type"]:checked').val() || 'expense';
-
-        $.ajax({
-
-            url: '/api/categories?type=' + type,
-
-            method: 'GET',
-
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-
-            success: function(response) {
-
-                const categories = response.data || [];
-
-                renderManageCategories(categories);
-                loadCategories();
-
-            }
-
-        });
-
+        const allCategories = CacheManager.getAllCategories();
+        
+        // Filter categories by type
+        const categories = allCategories.filter(c => c.type === type) || [];
+        
+        renderManageCategories(categories);
     }
 
     function openCategoryForm(id = null) {
@@ -1123,6 +1078,8 @@
                     timer: 1500,
                     showConfirmButton: false
                 }).then(() => {
+                    // Update cache instead of fetching
+                    CacheManager.removeCategoryFromCache(id);
                     loadManageCategories();
                 });
             },
@@ -1210,27 +1167,10 @@
     }
 
     function loadManageWallets() {
-
-        $.ajax({
-
-            url: '/api/wallets',
-
-            method: 'GET',
-
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-
-            success: function(response) {
-
-                const wallets = response.data || [];
-
-                renderManageWallets(wallets);
-                loadWallets();
-            }
-
-        });
-
+        // Get wallets from cache instead of API
+        const wallets = CacheManager.getAllWallets() || [];
+        
+        renderManageWallets(wallets);
     }
 
     function openWalletForm(id = null) {
@@ -1292,6 +1232,8 @@
                     timer: 1500,
                     showConfirmButton: false
                 }).then(() => {
+                    // Update cache instead of fetching
+                    CacheManager.removeWalletFromCache(id);
                     loadManageWallets();
                 });
             },

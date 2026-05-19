@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Kategori - Keuangan App</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/cache-manager.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -74,7 +74,19 @@
             }
 
             $('#pageTitle').text(`Kategori ${typeLabel}`);
-            loadCategories();
+
+            // Callback when master data is ready
+            window.onMasterDataReady = function() {
+                renderCategoriesFromCache();
+            };
+
+            // Callback when categories updated (from background sync or manual update)
+            window.onCategoriesUpdated = function() {
+                renderCategoriesFromCache();
+            };
+
+            // Initialize master data from cache or fetch
+            CacheManager.initMasterData();
 
             $('#backBtn').on('click', function() {
                 history.back();
@@ -101,32 +113,24 @@
             });
         });
 
-        function loadCategories() {
-            $.ajax({
-                url: `/api/categories`,
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` },
-                success: function(response) {
-                    $('#loadingState').addClass('hidden');
-                    
-                    const filtered = (response.data || []).filter(c => c.type === categoryType);
-                    
-                    if (filtered.length > 0) {
-                        renderCategories(filtered);
-                        $('#listContainer').removeClass('hidden');
-                    } else {
-                        $('#emptyState').removeClass('hidden');
-                    }
-                },
-                error: function() {
-                    $('#loadingState').addClass('hidden');
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Gagal memuat kategori'
-                    });
-                }
-            });
+        /**
+         * Render categories from cache (instantly)
+         * No API call needed - data already in memory
+         */
+        function renderCategoriesFromCache() {
+            const allCategories = CacheManager.getAllCategories();
+            const categories = allCategories.filter(c => c.type === categoryType) || [];
+            
+            $('#loadingState').addClass('hidden');
+
+            if (categories && categories.length > 0) {
+                renderCategories(categories);
+                $('#listContainer').removeClass('hidden');
+                $('#emptyState').addClass('hidden');
+            } else {
+                $('#listContainer').addClass('hidden');
+                $('#emptyState').removeClass('hidden');
+            }
         }
 
         function renderCategories(categories) {
@@ -205,7 +209,8 @@
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        loadCategories();
+                        // Update cache immediately (no need to fetch)
+                        CacheManager.removeCategoryFromCache(id);
                     });
                 },
                 error: function(error) {
@@ -220,7 +225,8 @@
 
         window.saveCategoryForm = function(formData) {
             const isEdit = formData.id ? true : false;
-            const url = isEdit ? `/api/categories/${formData.id}` : '/api/categories';
+            const categoryId = formData.id;
+            const url = isEdit ? `/api/categories/${categoryId}` : '/api/categories';
             const method = isEdit ? 'PUT' : 'POST';
 
             $.ajax({
@@ -240,8 +246,14 @@
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
-                        closeFormModal();
-                        loadCategories();
+                        // Update cache immediately (no need to fetch)
+                        if (isEdit) {
+                            CacheManager.updateCategoryInCache(categoryId, response.data);
+                        } else {
+                            CacheManager.addCategoryToCache(response.data);
+                        }
+                        
+                        closeFormCategoryModal();
                     });
                 },
                 error: function(error) {

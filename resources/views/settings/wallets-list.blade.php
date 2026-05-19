@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Dompet - Keuangan App</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/cache-manager.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -64,94 +64,65 @@
     </div>
 
     <script>
-        $(document).ready(function() {
-            const token = localStorage.getItem('api_token');
+        // ============= CONFIG =============
+        const token = localStorage.getItem('api_token');
 
+        // ============= READY =============
+        $(document).ready(function() {
             if (!token) {
                 window.location.href = '/login';
                 return;
             }
 
-            // Load wallets
-            loadWallets();
+            // Cache callbacks
+            window.onMasterDataReady = () => renderWalletsFromCache();
+            window.onWalletsUpdated = () => renderWalletsFromCache();
 
-            // Back button
-            $('#backBtn').on('click', function() {
-                history.back();
+            // Initialize
+            CacheManager.initMasterData();
+
+            // Events
+            $('#backBtn').on('click', () => history.back());
+            $('#fabAdd').on('click', () => openWalletForm(null));
+            $(document).on('click', '.btn-delete', function() {
+                deleteWalletConfirm($(this).data('id'));
             });
-
-            // FAB - Add
-            $('#fabAdd').on('click', function() {
-                openWalletForm(null);
+            $(document).on('click', '.btn-edit', function() {
+                openWalletForm($(this).data('id'));
             });
-
-            // Delete button
-            $(document).on('click', '.btn-delete', function(e) {
-                e.preventDefault();
-                const walletId = $(this).data('id');
-                deleteWalletConfirm(walletId);
-            });
-
-            // Edit button
-            $(document).on('click', '.btn-edit', function(e) {
-                e.preventDefault();
-                const walletId = $(this).data('id');
-                openWalletForm(walletId);
-            });
-
-            // Close form modal
-            $('#formModal').on('click', function(e) {
-                if (e.target.id === 'formModal') {
-                    closeFormWalletModal();
-                }
+            $('#formModal').on('click', (e) => {
+                if (e.target.id === 'formModal') closeFormWalletModal();
             });
         });
 
-        function loadWallets() {
-            const token = localStorage.getItem('api_token');
-            $.ajax({
-                url: '/api/wallets',
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` },
-                success: function(response) {
-                    $('#loadingState').addClass('hidden');
+        // ============= RENDER =============
+        function renderWalletsFromCache() {
+            const wallets = CacheManager.getAllWallets();
+            $('#loadingState').addClass('hidden');
 
-                    if (response.data && response.data.length > 0) {
-                        renderWallets(response.data);
-                        $('#walletsList').removeClass('hidden');
-                    } else {
-                        $('#emptyState').removeClass('hidden');
-                    }
-                },
-                error: function() {
-                    $('#loadingState').addClass('hidden');
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Gagal memuat dompet'
-                    });
-                }
-            });
+            if (wallets?.length > 0) {
+                renderWallets(wallets);
+                $('#walletsList').removeClass('hidden');
+                $('#emptyState').addClass('hidden');
+            } else {
+                $('#walletsList').addClass('hidden');
+                $('#emptyState').removeClass('hidden');
+            }
         }
 
         function renderWallets(wallets) {
             let html = '';
             wallets.forEach((wallet) => {
-                const balanceFormatted = parseFloat(wallet.balance).toLocaleString('id-ID', {
+                const balance = parseFloat(wallet.balance).toLocaleString('id-ID', {
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2
                 });
-                
-                // Get icon and color
                 const icon = wallet.icon || 'fa-wallet';
                 const color = wallet.color || '#3B82F6';
-                
-                // Calculate lighter background color (add opacity)
-                const bgColor = color + '20'; // Add 20 hex for transparency
+                const bgColor = color + '20';
 
                 html += `
-                    <div class="wallet-item px-4 py-3 border-b border-gray-100 last:border-b-0 flex items-center space-x-4 hover:bg-gray-50 transition"
-                         data-id="${wallet.id}">
+                    <div class="wallet-item px-4 py-3 border-b border-gray-100 last:border-b-0 flex items-center space-x-4 hover:bg-gray-50 transition" data-id="${wallet.id}">
                         <div class="w-10 h-10 rounded flex items-center justify-center flex-shrink-0" style="background-color: ${bgColor};">
                             <i class="fas ${icon}" style="color: ${color};"></i>
                         </div>
@@ -160,7 +131,7 @@
                             <p class="text-xs text-gray-600">${wallet.wallet_type?.name || 'Unknown'}</p>
                         </div>
                         <div class="text-right flex-shrink-0 mr-3">
-                            <p class="font-semibold text-gray-900">Rp ${balanceFormatted}</p>
+                            <p class="font-semibold text-gray-900">Rp ${balance}</p>
                         </div>
                         <div class="flex items-center space-x-2 flex-shrink-0">
                             <button class="btn-edit px-3 py-2 text-blue-600 hover:bg-blue-50 rounded transition" data-id="${wallet.id}">
@@ -173,16 +144,13 @@
                     </div>
                 `;
             });
-
             $('#walletsList').html(html);
         }
 
+        // ============= MODAL =============
         function openWalletForm(walletId) {
             const url = walletId ? `/settings/wallet/form/${walletId}` : '/settings/wallet/form';
-
-            $('#formContent').load(url, function() {
-                $('#formModal').removeClass('hidden');
-            });
+            $('#formContent').load(url, () => $('#formModal').removeClass('hidden'));
         }
 
         function closeFormWalletModal() {
@@ -190,6 +158,7 @@
             $('#formContent').empty();
         }
 
+        // ============= DELETE =============
         function deleteWalletConfirm(walletId) {
             Swal.fire({
                 title: 'Hapus Dompet?',
@@ -201,14 +170,11 @@
                 confirmButtonText: 'Hapus',
                 cancelButtonText: 'Batal'
             }).then((result) => {
-                if (result.isConfirmed) {
-                    deleteWallet(walletId);
-                }
+                if (result.isConfirmed) deleteWallet(walletId);
             });
         }
 
         function deleteWallet(walletId) {
-            const token = localStorage.getItem('api_token');
             $.ajax({
                 url: `/api/wallets/${walletId}`,
                 method: 'DELETE',
@@ -217,30 +183,20 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 success: function() {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Terhapus',
-                        text: 'Dompet berhasil dihapus',
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => {
-                        loadWallets();
-                    });
+                    Swal.fire('Terhapus!', 'Dompet berhasil dihapus', 'success');
+                    CacheManager.removeWalletFromCache(walletId);
                 },
                 error: function(error) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: error.responseJSON?.message || 'Gagal menghapus dompet'
-                    });
+                    Swal.fire('Error!', error.responseJSON?.message || 'Gagal menghapus', 'error');
                 }
             });
         }
 
+        // ============= SAVE =============
         window.saveWalletForm = function(formData) {
-            const token = localStorage.getItem('api_token');
             const isEdit = formData.id ? true : false;
-            const url = isEdit ? `/api/wallets/${formData.id}` : '/api/wallets';
+            const walletId = formData.id;
+            const url = isEdit ? `/api/wallets/${walletId}` : '/api/wallets';
             const method = isEdit ? 'PUT' : 'POST';
 
             $.ajax({
@@ -253,35 +209,23 @@
                 },
                 data: JSON.stringify(formData),
                 success: function(response) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil',
-                        text: response.message,
-                        timer: 1500,
-                        showConfirmButton: false
-                    }).then(() => {
-                        closeFormModal();
-                        loadWallets();
-                    });
+                    Swal.fire('Berhasil!', response.message, 'success');
+                    if (isEdit) {
+                        CacheManager.updateWalletInCache(walletId, response.data);
+                    } else {
+                        CacheManager.addWalletToCache(response.data);
+                    }
+                    closeFormWalletModal();
                 },
                 error: function(error) {
                     if (error.status === 422) {
-                        const errors = error.responseJSON.errors;
                         let msg = '';
-                        $.each(errors, function(field, messages) {
-                            msg += messages[0] + '\n';
+                        $.each(error.responseJSON.errors, (field, messages) => {
+                            msg += messages[0] + '\\n';
                         });
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Validasi Error',
-                            text: msg
-                        });
+                        Swal.fire('Validasi Error!', msg, 'error');
                     } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: error.responseJSON?.message || 'Gagal menyimpan dompet'
-                        });
+                        Swal.fire('Error!', error.responseJSON?.message || 'Gagal menyimpan', 'error');
                     }
                 }
             });

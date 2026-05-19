@@ -282,8 +282,14 @@
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
+                        // Update cache immediately (no need to fetch)
+                        if (isEdit) {
+                            CacheManager.updateWalletInCache(walletId, response.data);
+                        } else {
+                            CacheManager.addWalletToCache(response.data);
+                        }
+                        
                         closeFormWalletModal();
-                        loadWallets();
                     });
                 },
                 error: function(error) {
